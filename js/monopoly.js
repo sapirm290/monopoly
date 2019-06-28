@@ -55,6 +55,9 @@ Monopoly.updatePlayersMoney = function (player, amount) {
 Monopoly.rollDice = function () {
     Monopoly.currentRoll1 = Math.floor(Math.random() * 6) + 1;
     Monopoly.currentRoll2 = Math.floor(Math.random() * 6) + 1;
+    //TODO remove comment
+    // Monopoly.currentRoll1 = 1;
+    // Monopoly.currentRoll2 = 1;
     $(".dice").find(".dice-dot").css("opacity", 0);
     $(".dice#dice1").attr("data-num", Monopoly.currentRoll1).find(".dice-dot.num" + Monopoly.currentRoll1).css("opacity", 1);
     $(".dice#dice2").attr("data-num", Monopoly.currentRoll2).find(".dice-dot.num" + Monopoly.currentRoll2).css("opacity", 1);
@@ -63,10 +66,10 @@ Monopoly.rollDice = function () {
     }
     else Monopoly.doubleCounter = 0;
     var currentPlayer = Monopoly.getCurrentPlayer();
-    if(this.doubleCounter > 3){
+    if (this.doubleCounter > 3) {
         Monopoly.handleAction(currentPlayer, "jail");
     }
-    else{
+    else {
         Monopoly.handleAction(currentPlayer, "move", Monopoly.currentRoll1 + Monopoly.currentRoll2);
     }
 };
@@ -203,8 +206,22 @@ Monopoly.handleChanceCard = function (player) {
 
 Monopoly.handleCommunityCard = function (player) {
     //TODO: implement this method
-    alert("not implemented yet!")
-    Monopoly.setNextPlayerTurn();
+    var popup = Monopoly.getPopup("community");
+    popup.find(".popup-content").addClass("loading-state");
+    $.get("https://itcmonopoly.appspot.com/get_random_community_card", function (communityJson) {
+        popup.find(".popup-content #text-placeholder").text(communityJson["content"]);
+        popup.find(".popup-title").text(communityJson["title"]);
+        popup.find(".popup-content").removeClass("loading-state");
+        popup.find(".popup-content button").attr("data-action", communityJson["action"]).attr("data-amount", communityJson["amount"]);
+    }, "json");
+    popup.find("button").unbind("click").bind("click", function () {
+        var currentBtn = $(this);
+        var action = currentBtn.attr("data-action");
+        var amount = currentBtn.attr("data-amount");
+        console.log("testing the action and amount " + action + " " + amount)
+        Monopoly.handleAction(player, action, amount);
+    });
+    Monopoly.showPopup("community");
 };
 
 
@@ -329,7 +346,7 @@ Monopoly.isValidInput = function (validate, value) {
     var isValid = false;
     switch (validate) {
         case "numofplayers":
-            if (value >= 1 && value <= 4) {
+            if (value >= 1 && value <= 6) {
                 isValid = true;
             }
             break;
