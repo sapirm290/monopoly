@@ -148,7 +148,7 @@ Monopoly.setNextPlayerTurn = function () {
         var nextPlayerId = playerId;
         do {
             nextPlayerId++;
-            if (nextPlayerId > $(".player").length) {
+            if (nextPlayerId > Monopoly.numOfPlayers) {
                 nextPlayerId = 1;
             }
             var nextPlayer = $(".player#player" + nextPlayerId);
@@ -162,9 +162,10 @@ Monopoly.setNextPlayerTurn = function () {
     }
     else if (Monopoly.doubleCounter === 0) {
         // var playerId = parseInt(currentPlayerTurn.attr("id").replace("player", ""));
+        var nextPlayerId = playerId;
         do {
-            var nextPlayerId = playerId + 1;
-            if (nextPlayerId > $(".player").length) {
+            nextPlayerId++;
+            if (nextPlayerId > Monopoly.numOfPlayers) {
                 nextPlayerId = 1;
             }
             var nextPlayer = $(".player#player" + nextPlayerId);
@@ -314,8 +315,8 @@ Monopoly.calculateProperyRent = function (propertyCost) {
 
 
 Monopoly.closeAndNextTurn = function () {
-    Monopoly.setNextPlayerTurn();
     Monopoly.closePopup();
+    Monopoly.setNextPlayerTurn();
 };
 
 Monopoly.initPopups = function () {
@@ -355,6 +356,7 @@ Monopoly.handleBuy = function (player, propertyCell, propertyCost) {
 
 
 Monopoly.createPlayers = function (numOfPlayers) {
+    Monopoly.numOfPlayers = numOfPlayers;
     var startCell = $(".go");
     for (var i = 1; i <= numOfPlayers; i++) {
         var player = $("<div />").addClass("player shadowed").attr("id", "player" + i).attr("title", "player" + i + ": $" + Monopoly.moneyAtStart);
